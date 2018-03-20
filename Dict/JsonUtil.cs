@@ -40,7 +40,7 @@ namespace Dict
                 if (data["basic"]["phonetic"] != null)
                 {
                     JValue phonetic = (JValue)data["basic"]["phonetic"];
-                    strPhonetic = "[" + phonetic.ToString() + "]";
+                    strPhonetic = "[" + phonetic.ToString() + "]\r\n";
                 }
                 if (data["basic"]["explains"] != null)
                 {
@@ -51,7 +51,8 @@ namespace Dict
                     }
                 }
             }
-            result = strPhonetic + "\r\n" + strTranslation + "\r\n" + strExplain;
+
+            result = strPhonetic + strTranslation + "\r\n" + strExplain;
 
             return result;
         }

@@ -4,9 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -44,7 +41,7 @@ namespace Dict
         private void Button_Click_AddToWordBook(object sender, RoutedEventArgs e)
         {
             //DbUtil.GetInstance().OpenConnection();
-            DbUtil.GetInstance().Select();
+            //DbUtil.GetInstance().Select();
         }
 
         private void InputText_KeyDown(object sender, KeyEventArgs e)
