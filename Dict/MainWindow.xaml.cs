@@ -25,12 +25,23 @@ namespace Dict
         private void DoSearch()
         {
             string sResult = "";
-            if (InputText.Text.Length > 0)
+            string sInputText = InputText.Text.Trim();
+            if (sInputText.Length > 0)
             {
-                sResult = HttpUtil.HttpRequest(InputText.Text);
+                sResult = HttpUtil.HttpRequest(sInputText);
             }
+
             // parse the JSON string
-            Result.Text = JsonUtil.GetInstance().ParseString(sResult);
+            Word newWord = JsonUtil.GetInstance().ParseString(sResult);
+
+            // build up the result string and display it
+            Result.Text = JsonUtil.GetInstance().BuildupStringResult(newWord);
+
+            if (newWord.isSearchSuccessed)
+            {
+                // add the new word to the database
+                DbUtil.GetInstance().AddNewWord(newWord);
+            }
         }
 
         private void Button_Click_Search(object sender, RoutedEventArgs e)

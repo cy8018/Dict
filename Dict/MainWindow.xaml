@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Dict"
         mc:Ignorable="d"
-        Title="Dict" Height="186.631" Width="300.241" Topmost="True" ResizeMode="CanMinimize" Icon="dict.ico">
+        Title="Dict" Height="186.631" Width="267.241" Topmost="True" ResizeMode="CanMinimize" Icon="dict.ico">
     <Grid Margin="0,0,-8,-6">
         <TextBox x:Name="InputText" HorizontalAlignment="Left" Height="24" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="216" FontSize="14" Margin="4,0,0,0" KeyDown="InputText_KeyDown"/>
-        <Button Content="go" HorizontalAlignment="Left" Height="24" Margin="223,0,0,0" VerticalAlignment="Top" Width="23" Click="Button_Click_Search"/>
-        <Button x:Name="BtnAddToWordBook" Content="Add" HorizontalAlignment="Left" Height="24" Margin="251,0,0,0" VerticalAlignment="Top" Width="29" Click="Button_Click_AddToWordBook"/>
-        <TextBox x:Name="Result" HorizontalAlignment="Left" Height="114" Margin="4,29,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="276"/>
+        <Button Content="↩" HorizontalAlignment="Left" Height="24" Margin="223,0,0,0" VerticalAlignment="Top" Width="23" Click="Button_Click_Search" ToolTip="Search"/>
+        <Button x:Name="BtnAddToWordBook" Content="Add" HorizontalAlignment="Left" Height="24" Margin="251,0,0,0" VerticalAlignment="Top" Width="29" Click="Button_Click_AddToWordBook" Visibility="Hidden"/>
+        <TextBox x:Name="Result" HorizontalAlignment="Left" Height="114" Margin="4,29,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="242"/>
 
     </Grid>
 </Window>

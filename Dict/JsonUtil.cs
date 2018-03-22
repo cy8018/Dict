@@ -8,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace Dict
 {
+    class Word
+    {
+        public string word { get; set; }
+
+        public string phonetic { get; set; }
+
+        public string translation { get; set; }
+
+        public string explains { get; set; }
+
+        public bool isSearchSuccessed { get; set; }
+
+        public string errorMessage { get; set; }
+    }
+
+    /// <summary>
+    /// JSON string processing class
+    /// </summary>
     class JsonUtil
     {
         private static JsonUtil m_instance = null;
@@ -19,42 +37,98 @@ namespace Dict
             return m_instance;
         }
 
-        public string ParseString(string str)
+        public string BuildupStringResult(Word word)
         {
             string result = "";
+            if (null != word)
+            {
+                if (word.isSearchSuccessed)
+                {
+                    result = "[" + word.phonetic + "]\r\n"
+                        + word.translation + "\r\n"
+                        + word.explains;
+                }
+                else
+                {
+                    result = word.word;
+                }
+            }
+            else
+            {
+                result = "Error: 'word == null'";
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Parse the JSON string and build up the result
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public Word ParseString(string str)
+        {
+            Word word = new Word();
+            //string result = "";
             string strTranslation = "";
             string strPhonetic = "";
             string strExplain = "";
-            JObject data = (JObject)JsonConvert.DeserializeObject(str);
-            if(data["translation"] != null)
+            string strQuery = "";
+            try
             {
-                JArray translationArray = (JArray)data["translation"];
-                foreach(string translation in translationArray)
+                // Parse the JSON result into object
+                JObject data = (JObject)JsonConvert.DeserializeObject(str);
+                // Get the searched word
+                if (data["query"] != null)
                 {
-                    strTranslation = strTranslation + translation + "; ";
+                    JValue query = (JValue)data["query"];
+                    strQuery = query.ToString();
                 }
-            }
-
-            if(data["basic"] != null)
-            {
-                if (data["basic"]["phonetic"] != null)
+                // Get the translation part
+                if (data["translation"] != null)
                 {
-                    JValue phonetic = (JValue)data["basic"]["phonetic"];
-                    strPhonetic = "[" + phonetic.ToString() + "]\r\n";
-                }
-                if (data["basic"]["explains"] != null)
-                {
-                    JArray explainsArray = (JArray)data["basic"]["explains"];
-                    foreach (string explain in explainsArray)
+                    JArray translationArray = (JArray)data["translation"];
+                    foreach (string translation in translationArray)
                     {
-                        strExplain = strExplain + explain + "\r\n";
+                        strTranslation = strTranslation + translation + "; ";
                     }
                 }
+                // Get the basic part
+                if (data["basic"] != null)
+                {
+                    // phonetic
+                    if (data["basic"]["phonetic"] != null)
+                    {
+                        JValue phonetic = (JValue)data["basic"]["phonetic"];
+                        strPhonetic = /*"[" + */phonetic.ToString()/* + "]"*/;
+                    }
+                    // explains
+                    if (data["basic"]["explains"] != null)
+                    {
+                        JArray explainsArray = (JArray)data["basic"]["explains"];
+                        foreach (string explain in explainsArray)
+                        {
+                            strExplain = strExplain + explain + "\r\n";
+                        }
+                    }
+                    word.isSearchSuccessed = true;
+                    word.word = strQuery;
+                    word.phonetic = strPhonetic;
+                    word.translation = strTranslation;
+                    word.explains = strExplain;
+                }
+                else
+                {
+                    word.word = strQuery;
+                    word.isSearchSuccessed = false;
+                }
             }
-
-            result = strPhonetic + strTranslation + "\r\n" + strExplain;
-
-            return result;
+            catch (Exception e)
+            {
+                word.isSearchSuccessed = false;
+                // Set the error message when exception
+                word.errorMessage = "Error information:\r\n" + e.Message + "\r\n\r\nHttpResponse:\r\n" + str;
+            }
+            return word;
         }
     }
 }

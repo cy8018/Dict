@@ -88,46 +88,93 @@ namespace Dict
             }
         }
 
-        //Select statement
-        public List<string>[] Select()
+        /// <summary>
+        /// Add new word into database
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public bool AddNewWord(Word word)
         {
-            string query = "SELECT * FROM Info";
+            bool bIsSuccess = false;
 
-            //Create a list to store the result
-            List<string>[] list = new List<string>[3];
-            list[0] = new List<string>();
-            list[1] = new List<string>();
-            list[2] = new List<string>();
+            // replace sepical characters
+            string strPhonetic = word.phonetic.Replace("'", "\\'");
 
-            //Open connection
-            if (this.OpenConnection() == true)
+            // compose the insert SQL
+            string sql = "insert into word_raw (word, phonetic, translation, explains, time) SELECT '"
+                + word.word + "', '"
+                + word.phonetic.Replace("'", "\\'") + "', '" /* replace sepical characters */
+                + word.translation + "', '"
+                + word.explains + "', '"
+                + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +"' "
+                + "where not exists (select id from word_raw where word = '" + word.word + "')";
+            try
             {
-                //Create Command
-                MySqlCommand cmd = new MySqlCommand(query, connection);
-                //Create a data reader and Execute the command
-                MySqlDataReader dataReader = cmd.ExecuteReader();
-
-                //Read the data and store them in the list
-                while (dataReader.Read())
+                // Open connection
+                if (this.OpenConnection() == true)
                 {
-                    list[0].Add(dataReader["id"] + "");
-                    list[1].Add(dataReader["name"] + "");
-                    list[2].Add(dataReader["time"] + "");
+                    // Create Command
+                    MySqlCommand cmd = new MySqlCommand(sql, connection);
+                    // Execute the command
+                    int rows = cmd.ExecuteNonQuery();
+
+                    if (rows > 0)
+                    {
+                        bIsSuccess = true;
+                    }
                 }
-
-                //close Data Reader
-                dataReader.Close();
-
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            finally
+            {
                 //close Connection
                 this.CloseConnection();
-
-                //return list to be displayed
-                return list;
             }
-            else
-            {
-                return list;
-            }
+            return bIsSuccess;
         }
+        //Select statement
+        //public List<string>[] Select()
+        //{
+        //    string query = "SELECT * FROM Info";
+
+        //    //Create a list to store the result
+        //    List<string>[] list = new List<string>[3];
+        //    list[0] = new List<string>();
+        //    list[1] = new List<string>();
+        //    list[2] = new List<string>();
+
+        //    //Open connection
+        //    if (this.OpenConnection() == true)
+        //    {
+        //        //Create Command
+        //        MySqlCommand cmd = new MySqlCommand(query, connection);
+        //        //Create a data reader and Execute the command
+        //        MySqlDataReader dataReader = cmd.ExecuteReader();
+
+        //        //Read the data and store them in the list
+        //        while (dataReader.Read())
+        //        {
+        //            list[0].Add(dataReader["id"] + "");
+        //            list[1].Add(dataReader["name"] + "");
+        //            list[2].Add(dataReader["time"] + "");
+        //        }
+
+        //        //close Data Reader
+        //        dataReader.Close();
+
+        //        //close Connection
+        //        this.CloseConnection();
+
+        //        //return list to be displayed
+        //        return list;
+        //    }
+        //    else
+        //    {
+        //        return list;
+        //    }
+        //}
     }
 }
