@@ -27,6 +27,8 @@ namespace Dict
             {
                 // build up the request
                 WebRequest wReq = System.Net.WebRequest.Create(m_sApiUrl + sInput);
+                // Set proxy
+                wReq.Proxy = WebRequest.GetSystemWebProxy();
                 // Get the response instance.
                 WebResponse wResp = wReq.GetResponse();
 

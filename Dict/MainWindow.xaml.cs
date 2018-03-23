@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -40,7 +41,7 @@ namespace Dict
             if (newWord.isSearchSuccessed)
             {
                 // add the new word to the database
-                DbUtil.GetInstance().AddNewWord(newWord);
+                DbUtil.GetInstance().AsyncAddNewWord(newWord);
             }
         }
 

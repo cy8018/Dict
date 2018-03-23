@@ -88,15 +88,8 @@ namespace Dict
             }
         }
 
-        /// <summary>
-        /// Add new word into database
-        /// </summary>
-        /// <param name="word"></param>
-        /// <returns></returns>
-        public bool AddNewWord(Word word)
+        public string BuildInsertSql(Word word)
         {
-            bool bIsSuccess = false;
-
             // replace sepical characters
             string strPhonetic = word.phonetic.Replace("'", "\\'");
 
@@ -106,16 +99,29 @@ namespace Dict
                 + word.phonetic.Replace("'", "\\'") + "', '" /* replace sepical characters */
                 + word.translation + "', '"
                 + word.explains + "', '"
-                + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") +"' "
+                + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' "
                 + "where not exists (select id from word_raw where word = '" + word.word + "')";
+
+            return sql;
+        }
+
+        /// <summary>
+        /// Add new word into database
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public bool AddNewWord(Word word)
+        {
+            bool bIsSuccess = false;
             try
             {
                 // Open connection
                 if (this.OpenConnection() == true)
                 {
                     // Create Command
-                    MySqlCommand cmd = new MySqlCommand(sql, connection);
-                    // Execute the command
+                    MySqlCommand cmd = new MySqlCommand(BuildInsertSql(word), connection);
+                    // Execute the cmd
+                    cmd.ExecuteNonQueryAsync();
                     int rows = cmd.ExecuteNonQuery();
 
                     if (rows > 0)
@@ -135,46 +141,47 @@ namespace Dict
             }
             return bIsSuccess;
         }
-        //Select statement
-        //public List<string>[] Select()
-        //{
-        //    string query = "SELECT * FROM Info";
 
-        //    //Create a list to store the result
-        //    List<string>[] list = new List<string>[3];
-        //    list[0] = new List<string>();
-        //    list[1] = new List<string>();
-        //    list[2] = new List<string>();
+        public void AsyncAddNewWord(Word word)
+        {
+            connection.Open();
+            try
+            {
+                // Create Command
+                MySqlCommand cmd = new MySqlCommand(BuildInsertSql(word), connection);
+                AsyncCallback callback = new AsyncCallback(HandleCallback);
+                cmd.BeginExecuteNonQuery(callback, cmd);
+            }
+            catch (Exception ex)
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+        }
 
-        //    //Open connection
-        //    if (this.OpenConnection() == true)
-        //    {
-        //        //Create Command
-        //        MySqlCommand cmd = new MySqlCommand(query, connection);
-        //        //Create a data reader and Execute the command
-        //        MySqlDataReader dataReader = cmd.ExecuteReader();
+        private void HandleCallback(IAsyncResult result)
+        {
+            try
+            {
+                // Retrieve the original cmd object, passed
+                // to this procedure in the AsyncState property
+                // of the IAsyncResult parameter.
+                MySqlCommand cmd = (MySqlCommand)result.AsyncState;
+                int rowCount = cmd.EndExecuteNonQuery(result);
+            }
+            catch (Exception ex)
+            {
 
-        //        //Read the data and store them in the list
-        //        while (dataReader.Read())
-        //        {
-        //            list[0].Add(dataReader["id"] + "");
-        //            list[1].Add(dataReader["name"] + "");
-        //            list[2].Add(dataReader["time"] + "");
-        //        }
-
-        //        //close Data Reader
-        //        dataReader.Close();
-
-        //        //close Connection
-        //        this.CloseConnection();
-
-        //        //return list to be displayed
-        //        return list;
-        //    }
-        //    else
-        //    {
-        //        return list;
-        //    }
-        //}
-    }
+            }
+            finally
+            {
+                if (connection != null)
+                {
+                    connection.Close();
+                }
+            }
+        }
+}
 }
