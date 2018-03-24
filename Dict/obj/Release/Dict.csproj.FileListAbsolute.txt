@@ -16,3 +16,4 @@ D:\work\vs\GitDict\Dict\obj\Release\Dict.csproj.GenerateResource.Cache
 D:\work\vs\GitDict\Dict\obj\Release\Dict.csproj.CoreCompileInputs.cache
 D:\work\vs\GitDict\Dict\obj\Release\Dict.exe
 D:\work\vs\GitDict\Dict\obj\Release\Dict.pdb
+D:\work\vs\GitDict\Dict\obj\Release\Dict.csprojResolveAssemblyReference.cache

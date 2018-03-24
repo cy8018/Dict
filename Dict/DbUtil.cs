@@ -34,7 +34,7 @@ namespace Dict
         private void Initialize()
         {
             server = "35.194.139.242";
-            database = "mysql";
+            database = "word_book";
             uid = "caoyu";
             password = "123456";
             string connectionString;
