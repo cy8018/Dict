@@ -144,7 +144,10 @@ namespace Dict
 
         public void AsyncAddNewWord(Word word)
         {
-            connection.Open();
+            if (!OpenConnection())
+            {
+                return;
+            }
             try
             {
                 // Create Command
