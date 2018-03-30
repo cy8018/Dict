@@ -23,7 +23,7 @@ namespace Dict
             InitializeComponent();
         }
 
-        private void DoSearch()
+        private Word DoSearch()
         {
             string sResult = "";
             string sInputText = InputText.Text.Trim();
@@ -38,15 +38,12 @@ namespace Dict
             // build up the result string and display it
             Result.Text = JsonUtil.GetInstance().BuildupStringResult(newWord);
 
-            if (newWord.isSearchSuccessed)
-            {
-                // add the new word to the database
-                DbUtil.GetInstance().AsyncAddNewWord(newWord);
-            }
+            return newWord;
         }
 
         private void Button_Click_Search(object sender, RoutedEventArgs e)
         {
+            // Only do the search when click the button, not add to database
             DoSearch();
         }
 
@@ -60,7 +57,12 @@ namespace Dict
         {
             if(e.Key == Key.Enter && InputText.Text.Length > 0)
             {
-                DoSearch();
+                Word newWord = DoSearch();
+                if (newWord.isSearchSuccessed)
+                {
+                    // add the new word to the database
+                    DbUtil.GetInstance().AsyncAddNewWord(newWord);
+                }
             }            
         }
     }
