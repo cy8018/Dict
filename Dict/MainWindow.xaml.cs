@@ -22,7 +22,7 @@ namespace Dict
         {
             InitializeComponent();
         }
-
+        
         private Word DoSearch()
         {
             string sResult = "";
@@ -45,12 +45,6 @@ namespace Dict
         {
             // Only do the search when click the button, not add to database
             DoSearch();
-        }
-
-        private void Button_Click_AddToWordBook(object sender, RoutedEventArgs e)
-        {
-            //DbUtil.GetInstance().OpenConnection();
-            //DbUtil.GetInstance().Select();
         }
 
         private void InputText_KeyDown(object sender, KeyEventArgs e)
