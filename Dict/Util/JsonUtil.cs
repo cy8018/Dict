@@ -5,28 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dict.Model;
 
 namespace Dict
 {
-    class Word
-    {
-        public string word { get; set; }
-
-        public string phonetic { get; set; }
-
-        public string translation { get; set; }
-
-        public string explains { get; set; }
-
-        public bool isSearchSuccessed { get; set; }
-
-        public string errorMessage { get; set; }
-    }
-
     /// <summary>
     /// JSON string processing class
     /// </summary>
-    class JsonUtil
+    public class JsonUtil
     {
         private static JsonUtil m_instance = null;
 
@@ -37,20 +23,20 @@ namespace Dict
             return m_instance;
         }
 
-        public string BuildupStringResult(Word word)
+        public string BuildupStringResult(WordModel word)
         {
             string result = "";
             if (null != word)
             {
-                if (word.isSearchSuccessed)
+                if (word.IsSearchSuccessed)
                 {
-                    result = "[" + word.phonetic + "]\r\n"
-                        + word.translation + "\r\n"
-                        + word.explains;
+                    result = "[" + word.Phonetic + "]\r\n"
+                        + word.Translation + "\r\n"
+                        + word.Explains;
                 }
                 else
                 {
-                    result = word.word;
+                    result = word.Word;
                 }
             }
             else
@@ -65,9 +51,9 @@ namespace Dict
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>
-        public Word ParseString(string str)
+        public WordModel ParseString(string str)
         {
-            Word word = new Word();
+            WordModel word = new WordModel();
             //string result = "";
             string strTranslation = "";
             string strPhonetic = "";
@@ -110,23 +96,23 @@ namespace Dict
                             strExplain = strExplain + explain + "\r\n";
                         }
                     }
-                    word.isSearchSuccessed = true;
-                    word.word = strQuery;
-                    word.phonetic = strPhonetic;
-                    word.translation = strTranslation;
-                    word.explains = strExplain;
+                    word.IsSearchSuccessed = true;
+                    word.Word = strQuery;
+                    word.Phonetic = strPhonetic;
+                    word.Translation = strTranslation;
+                    word.Explains = strExplain;
                 }
                 else
                 {
-                    word.word = strQuery;
-                    word.isSearchSuccessed = false;
+                    word.Word = strQuery;
+                    word.IsSearchSuccessed = false;
                 }
             }
             catch (Exception e)
             {
-                word.isSearchSuccessed = false;
+                word.IsSearchSuccessed = false;
                 // Set the error message when exception
-                word.errorMessage = "Error information:\r\n" + e.Message + "\r\n\r\nHttpResponse:\r\n" + str;
+                word.ErrorMessage = "Error information:\r\n" + e.Message + "\r\n\r\nHttpResponse:\r\n" + str;
             }
             return word;
         }

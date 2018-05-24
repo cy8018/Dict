@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using MySql.Data.MySqlClient;
+using Dict.Model;
 
 namespace Dict
 {
@@ -88,19 +89,19 @@ namespace Dict
             }
         }
 
-        public string BuildInsertSql(Word word)
+        public string BuildInsertSql(WordModel word)
         {
             // replace sepical characters
-            string strPhonetic = word.phonetic.Replace("'", "\\'");
+            string strPhonetic = word.Phonetic.Replace("'", "\\'");
 
             // compose the insert SQL
             string sql = "insert into word_raw (word, phonetic, translation, explains, time) SELECT '"
-                + word.word + "', '"
-                + word.phonetic.Replace("'", "\\'") + "', '" /* replace sepical characters */
-                + word.translation + "', '"
-                + word.explains + "', '"
+                + word.Word + "', '"
+                + word.Phonetic.Replace("'", "\\'") + "', '" /* replace sepical characters */
+                + word.Translation + "', '"
+                + word.Explains + "', '"
                 + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "' "
-                + "where not exists (select id from word_raw where word = '" + word.word + "')";
+                + "where not exists (select id from word_raw where word = '" + word.Word + "')";
 
             return sql;
         }
@@ -110,7 +111,7 @@ namespace Dict
         /// </summary>
         /// <param name="word"></param>
         /// <returns></returns>
-        public bool AddNewWord(Word word)
+        public bool AddNewWord(WordModel word)
         {
             bool bIsSuccess = false;
             try
@@ -142,11 +143,12 @@ namespace Dict
             return bIsSuccess;
         }
 
-        public void AsyncAddNewWord(Word word)
+        public bool AsyncAddNewWord(WordModel word)
         {
+            bool result = false;
             if (!OpenConnection())
             {
-                return;
+                return result;
             }
             try
             {
@@ -154,6 +156,7 @@ namespace Dict
                 MySqlCommand cmd = new MySqlCommand(BuildInsertSql(word), connection);
                 AsyncCallback callback = new AsyncCallback(HandleCallback);
                 cmd.BeginExecuteNonQuery(callback, cmd);
+                result = true;
             }
             catch (Exception ex)
             {
@@ -162,6 +165,12 @@ namespace Dict
                     connection.Close();
                 }
             }
+            return result;
+        }
+
+        public async Task<bool> AddNewWordAsync(WordModel word)
+        {
+            return await Task.Run(()=>AsyncAddNewWord(word));
         }
 
         private void HandleCallback(IAsyncResult result)

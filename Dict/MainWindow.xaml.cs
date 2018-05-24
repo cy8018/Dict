@@ -10,20 +10,22 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
+using Dict.Model;
 
 namespace Dict
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void DoSearch()
+        private async void DoSearchAsync()
         {
             string sResult = "";
             string sInputText = InputText.Text.Trim();
@@ -33,21 +35,29 @@ namespace Dict
             }
 
             // parse the JSON string
-            Word newWord = JsonUtil.GetInstance().ParseString(sResult);
+            WordModel newWord = JsonUtil.GetInstance().ParseString(sResult);
 
             // build up the result string and display it
             Result.Text = JsonUtil.GetInstance().BuildupStringResult(newWord);
 
-            if (newWord.isSearchSuccessed)
+            if (newWord.IsSearchSuccessed)
             {
                 // add the new word to the database
-                DbUtil.GetInstance().AsyncAddNewWord(newWord);
+                if(await DbUtil.GetInstance().AddNewWordAsync(newWord))
+                {
+                    Result.Text += "\nSync with Cloud successfully.";
+                }
+                else
+                {
+                    Result.Text += "\nSync with Cloud failed.";
+                }
             }
+
         }
 
         private void Button_Click_Search(object sender, RoutedEventArgs e)
         {
-            DoSearch();
+            DoSearchAsync();
         }
 
         private void Button_Click_AddToWordBook(object sender, RoutedEventArgs e)
@@ -60,7 +70,7 @@ namespace Dict
         {
             if(e.Key == Key.Enter && InputText.Text.Length > 0)
             {
-                DoSearch();
+                DoSearchAsync();
             }            
         }
     }

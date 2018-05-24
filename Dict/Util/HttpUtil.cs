@@ -10,7 +10,7 @@ namespace Dict
     /// <summary>
     /// Http util class
     /// </summary>
-    class HttpUtil
+    public class HttpUtil
     {
         // the URL of YouDao Dictionary API
         private static string m_sApiUrl = "http://fanyi.youdao.com/openapi.do?keyfrom=MyDict-cy&key=2013312641&type=data&doctype=json&version=1.1&q=";
